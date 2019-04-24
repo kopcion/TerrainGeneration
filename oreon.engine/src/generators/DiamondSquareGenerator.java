@@ -10,15 +10,6 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 	private float[][] values;
 	private float jitterMult;
 
-	@SuppressWarnings(value = { "unused" })
-	private void print() {
-		for (int i = 0; i < values.length; i++) {
-			for (int j = 0; j < values[0].length; j++) {
-				System.out.print(values[i][j] + " ");
-			}
-			System.out.print('\n');
-		}
-	}
 
 	private void clear() {
 		for (int i = 0; i < isSet.length; i++) {
@@ -42,45 +33,33 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 			
 				if (!isSet[i1][jMid]) {
 					if (2 * i1 - iMid >= 0) {
-						values[i1][jMid] = (values[i1][j1] + values[iMid][jMid] + values[i1][j2]
-								+ values[2 * i1 - iMid][jMid]) / 4
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[i1][jMid] = (values[i1][j1] + values[iMid][jMid] + values[i1][j2] + values[2 * i1 - iMid][jMid]) / 4 + jitter();
 					} else {
-						values[i1][jMid] = (values[i1][j1] + values[iMid][jMid] + values[i1][j2]) / 3
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[i1][jMid] = (values[i1][j1] + values[iMid][jMid] + values[i1][j2]) / 3 + jitter();
 					}
 				}
 
 				if (!isSet[i2][jMid]) {
 					if (2 * i2 - iMid < values.length) {
-						values[i2][jMid] = (values[i2][j1] + values[iMid][jMid] + values[i2][j2]
-								+ values[2 * i2 - iMid][jMid]) / 4
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[i2][jMid] = (values[i2][j1] + values[iMid][jMid] + values[i2][j2] + values[2 * i2 - iMid][jMid]) / 4 + jitter();
 					} else {
-						values[i2][jMid] = (values[i2][j1] + values[iMid][jMid] + values[i2][j2]) / 3
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[i2][jMid] = (values[i2][j1] + values[iMid][jMid] + values[i2][j2]) / 3 + jitter();
 					}
 				}
 				
 				if (!isSet[iMid][j1]) {
 					if (2 * j1 - jMid >= 0) {
-						values[iMid][j1] = (values[i1][j1] + values[iMid][jMid] + values[i2][j1]
-								+ values[iMid][2 * j1 - jMid]) / 4
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[iMid][j1] = (values[i1][j1] + values[iMid][jMid] + values[i2][j1] + values[iMid][2 * j1 - jMid]) / 4 + jitter();
 					} else {
-						values[iMid][j1] = (values[i1][j1] + values[iMid][jMid] + values[i2][j1]) / 3
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[iMid][j1] = (values[i1][j1] + values[iMid][jMid] + values[i2][j1]) / 3 + jitter();
 					}
 				}
 
 				if (!isSet[iMid][j2]) {
 					if (2 * j2 - jMid < values[0].length) {
-						values[iMid][j2] = (values[i1][j2] + values[iMid][jMid] + values[i2][j2]
-								+ values[iMid][2 * j2 - jMid]) / 4
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[iMid][j2] = (values[i1][j2] + values[iMid][jMid] + values[i2][j2] + values[iMid][2 * j2 - jMid]) / 4 + jitter();
 					} else {
-						values[iMid][j2] = (values[i1][j2] + values[iMid][jMid] + values[i2][j2]) / 3
-								+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+						values[iMid][j2] = (values[i1][j2] + values[iMid][jMid] + values[i2][j2]) / 3 + jitter();
 					}
 				}
 
@@ -89,6 +68,10 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 		}
 	}
 
+	private float jitter(){
+	    return jitterEnabled * Config.AMPLITUDE * (2*random.nextFloat() - 1f) * jitterMult;
+    }
+	
 	private void diamondStep(int squareSize) {
 		int mid = squareSize / 2;
 
@@ -99,8 +82,7 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 				int i2 = i1 + squareSize;
 				int j2 = j1 + squareSize;
 				if (!isSet[iMid][jMid]) {
-					values[iMid][jMid] = (values[i1][j1] + values[i1][j2] + values[i2][j1] + values[i2][j2]) / 4
-							+ jitterEnabled * (random.nextFloat() - 0.5f) / jitterMult;
+					values[iMid][jMid] = (values[i1][j1] + values[i1][j2] + values[i2][j1] + values[i2][j2]) / 4 + jitter();
 				}
 
 				isSet[iMid][jMid] = true;
@@ -161,27 +143,21 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 
 	@Override
 	public void generate(int mapSize) {
-		this.isSet = new Boolean[mapSize][mapSize];
-		this.values = new float[mapSize][mapSize];
-		
-		for(int k=0; k < 25; k++) {
-			for(int i=0; i < 4; i++) {
-				clear();
-				
-				jitterMult = 2f;
-				jitterEnabled = Config.JITTER_ENABLED;
-				multiplier = 1f + k*0.15f;
-				
-				values[0][0] = random.nextFloat();
-				values[mapSize-1][0] = random.nextFloat();
-				values[0][mapSize-1] = random.nextFloat();
-				values[mapSize-1][mapSize-1] = random.nextFloat();
-		  
-				calculate();
-				
-				FileGenerator.generateFile(values);
-			}
-		}
-	}
+		isSet = new Boolean[mapSize][mapSize];
+		values = new float[mapSize][mapSize];
+		clear();
 
+        jitterMult = Config.SMOOTHING_PARAM;
+        jitterEnabled = Config.JITTER_ENABLED;
+        multiplier = Config.SMOOTHING_PARAM;
+
+        values[0][0] = random.nextFloat();
+        values[mapSize-1][0] = random.nextFloat();
+        values[0][mapSize-1] = random.nextFloat();
+        values[mapSize-1][mapSize-1] = random.nextFloat();
+
+        calculate();
+
+        FileGenerator.generateFile(values);
+	}
 }

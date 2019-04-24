@@ -108,45 +108,17 @@ public class PerlinNoiseGenerator implements HeightMapGenerator {
         values = new float[mapSize][mapSize];
         gradientsX = new float[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
         gradientsY = new float[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
+        generateGradients();
     }
 
     @Override
     public void generate(int mapSize) {
 
-        for(int i=0; i < 20; i++){
-            resolution = 50f;
-            init(mapSize);
-            generateGradients();
+        resolution = Config.RESOLUTION;
+        init(mapSize);
 
-            calculate();
+        calculate();
 
-            FileGenerator.generateFile(values);
-
-            resolution = 100f;
-            calculate();
-
-            FileGenerator.generateFile(values);
-
-            resolution = 150f;
-            calculate();
-
-            FileGenerator.generateFile(values);
-
-            resolution = 200f;
-            calculate();
-
-            FileGenerator.generateFile(values);
-
-            resolution = 250f;
-            calculate();
-
-            FileGenerator.generateFile(values);
-
-            resolution = 300f;
-            calculate();
-
-            FileGenerator.generateFile(values);
-
-        }
+        FileGenerator.generateFile(values);
     }
 }

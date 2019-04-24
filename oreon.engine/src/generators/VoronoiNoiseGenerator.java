@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class VoronoiNoiseGenerator implements HeightMapGenerator {
-    private static int numberOfPoints = 100;
+    private static int numberOfPoints;
     private float[][] values;
     private static Random random = new Random();
     private List<Point> points = new LinkedList<>();
@@ -46,7 +46,18 @@ public class VoronoiNoiseGenerator implements HeightMapGenerator {
     }
 
     private float dist(Point a, Point b){
-        return maxNormDist(a, b);
+        switch (Config.VORONOI_NORM) {
+            case 0:
+                return maxNormDist(a, b);
+            case 1:
+                return oneNormDist(a, b);
+            case 2:
+                return twoNormDist(a, b);
+            case 3:
+                return threeNormDist(a, b);
+            default:
+                return pNormDist(a, b, Config.VORONOI_NORM);
+        }
     }
 
     private float smallestDist(Point a){
@@ -113,16 +124,7 @@ public class VoronoiNoiseGenerator implements HeightMapGenerator {
 
     @Override
     public void generate(int mapSize) {
-        numberOfPoints = 50;
-        init(mapSize);
-
-        calculate();
-
-        FileGenerator.generateFile(values);
-
-        clear();
-
-        numberOfPoints = 100;
+        numberOfPoints = Config.VORONOI_POINTS;
         init(mapSize);
 
         calculate();
