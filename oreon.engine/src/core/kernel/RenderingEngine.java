@@ -1,6 +1,8 @@
 package core.kernel;
 
 import core.kernel.Window;
+import modules.sky.Skydome;
+import core.configs.Default;
 import core.kernel.Camera;
 
 /**
@@ -13,10 +15,13 @@ import core.kernel.Camera;
 public class RenderingEngine {
 	
 	private Window window;
+	private Skydome skydome;
 	
+
 	public RenderingEngine()
 	{
 		window = Window.getInstance();
+		skydome = new Skydome();
 	}
 	
 	public void init()
@@ -28,6 +33,9 @@ public class RenderingEngine {
 	{	
 		Camera.getInstance().update();
 		
+		Default.clearScreen();
+		
+		skydome.render();
 		// draw into OpenGL window
 		window.render();
 	}
