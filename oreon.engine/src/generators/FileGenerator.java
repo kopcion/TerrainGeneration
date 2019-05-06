@@ -14,13 +14,13 @@ public class FileGenerator {
 	static final ColorSpace GRAY = ColorSpace.getInstance(ColorSpace.CS_GRAY);
 	static int counter = 1;
 
-	public static void generateFile(float values[][]) {
+	public static void generateFile(double values[][]) {
 		Color color;
 		final BufferedImage res = new BufferedImage(values.length, values[0].length, BufferedImage.TYPE_BYTE_GRAY);
 		
 		for(int x=0; x < values.length; x++) {
 			for(int y=0; y < values[0].length; y++) {
-				color = new Color(GRAY, new float[] {values[x][y]}, 1f);
+				color = new Color(GRAY, new float[] {(float)values[x][y]}, 1f);
 				res.setRGB(x, y, color.getRGB());
 			}
 		}

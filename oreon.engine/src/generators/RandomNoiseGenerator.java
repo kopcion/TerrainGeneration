@@ -1,20 +1,20 @@
 package generators;
 
-import java.util.Random;
+public class RandomNoiseGenerator extends gen {
 
-public class RandomNoiseGenerator implements HeightMapGenerator {
-	static final Random random = new Random();
-	private float[][] values;
-	
 	public RandomNoiseGenerator() {}
-	
-	public void generate(int mapSize) {
-		this.values = new float[mapSize][mapSize];
+
+	@Override
+	void init() {
+		values = new double[mapSize][mapSize];
+	}
+
+	@Override
+	void calculate() {
 		for(int i=0; i < mapSize; i++) {
 			for(int j=0; j < mapSize; j++) {
-				values[i][j] = random.nextFloat();
+				values[i][j] = random.nextDouble();
 			}
 		}
-		FileGenerator.generateFile(values);
 	}
 }

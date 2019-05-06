@@ -1,26 +1,11 @@
 package generators;
 
-import java.util.Random;
 
-public class DiamondSquareGenerator implements HeightMapGenerator {
-	static final Random random = new Random();
-	private static float jitterEnabled = 0f;
-	static float multiplier;
-	private Boolean[][] isSet;
-	private float[][] values;
-	private float jitterMult;
+public class DiamondSquareGenerator extends gen {
 
+    public DiamondSquareGenerator() {}
 
-	private void clear() {
-		for (int i = 0; i < isSet.length; i++) {
-			for (int j = 0; j < isSet[0].length; j++) {
-				values[i][j] = 0f;
-				isSet[i][j] = false;
-			}
-		}
-	}
-
-	private void squareStep(int squareSize) {
+    private void squareStep(int squareSize) {
 		int mid = squareSize / 2;
 
 		for (int i1 = 0; i1 < values.length - squareSize; i1 += squareSize) {
@@ -68,10 +53,6 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 		}
 	}
 
-	private float jitter(){
-	    return jitterEnabled * Config.AMPLITUDE * (2*random.nextFloat() - 1f) * jitterMult;
-    }
-	
 	private void diamondStep(int squareSize) {
 		int mid = squareSize / 2;
 
@@ -90,74 +71,33 @@ public class DiamondSquareGenerator implements HeightMapGenerator {
 		}
 	}
 
-	private float getMax() {
-		float out = 0f;
-		for (int i = 0; i < values.length; i++) {
-			for (int j = 0; j < values[0].length; j++) {
-				out = Math.max(out, values[i][j]);
-			}
-		}
-		return out;
-	}
-
-	private float getMin() {
-		float out = 1f;
-		for (int i = 0; i < values.length; i++) {
-			for (int j = 0; j < values[0].length; j++) {
-				out = Math.min(out, values[i][j]);
-			}
-		}
-		return out;
-	}
-
-	private void normalize() {
-		float max = getMax();
-		float min = getMin();
-		float range = max - min;
-
-		for (int i = 0; i < values.length; i++) {
-			for (int j = 0; j < values[0].length; j++) {
-				values[i][j] -= min;
-				values[i][j] /= range;
-				values[i][j] = Math.max(values[i][j], 0f);
-				values[i][j] = Math.min(values[i][j], 1f);
-			}
-		}
-	}
-
-	private void calculate() {
+	@Override
+    void calculate() {
 
 		int squareSize = values.length - 1;
 
 		while (squareSize >= 2) {
-			// print();
 			diamondStep(squareSize);
 			squareStep(squareSize);
 
 			squareSize /= 2;
-			jitterMult *= multiplier;
+			jitterMult *= Config.SMOOTHING_PARAM;
 		}
 
 		normalize();
 	}
 
 	@Override
-	public void generate(int mapSize) {
+    void init(){
 		isSet = new Boolean[mapSize][mapSize];
-		values = new float[mapSize][mapSize];
+		values = new double[mapSize][mapSize];
 		clear();
 
-        jitterMult = Config.SMOOTHING_PARAM;
-        jitterEnabled = Config.JITTER_ENABLED;
-        multiplier = Config.SMOOTHING_PARAM;
+		jitterMult = Config.SMOOTHING_PARAM;
 
-        values[0][0] = random.nextFloat();
-        values[mapSize-1][0] = random.nextFloat();
-        values[0][mapSize-1] = random.nextFloat();
-        values[mapSize-1][mapSize-1] = random.nextFloat();
-
-        calculate();
-
-        FileGenerator.generateFile(values);
+        values[0][0] = random.nextDouble();
+		values[mapSize-1][0] = random.nextDouble();
+		values[0][mapSize-1] = random.nextDouble();
+		values[mapSize-1][mapSize-1] = random.nextDouble();
 	}
 }
