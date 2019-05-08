@@ -13,7 +13,9 @@ import static generators.utils.Utils.within;
 
 public class UpliftErosionGenerator extends gen {
 
+    private int[][] howMany;
     private double[][] values;
+    private List<Line> lines = new LinkedList<>();
     private static Random random = new Random();
     private List<Point> points = new LinkedList<>();
     private List<Point> hull = new LinkedList<>();
@@ -22,11 +24,32 @@ public class UpliftErosionGenerator extends gen {
 
     public UpliftErosionGenerator(){}
 
-    //TODO make it so that points are non collinear
+    //TODO make it so that points are non collinear, check, mby refactor
     private void generatePoints(){
         for(int i=0; i < Config.VORONOI_POINTS; i++){
-            points.add(new Point(random.nextDouble() * mapSize, random.nextDouble() * mapSize));
+            int x = random.nextInt(mapSize);
+            int y = random.nextInt(mapSize);
+
+            if(!checkLines(x, y)){
+                Point newPoint = new Point((double)x, (double)y);
+                for(Point point : points){
+                    lines.add(new Line(newPoint, point));
+                }
+                points.add(newPoint);
+            } else {
+                i--;
+            }
         }
+    }
+
+    //returns true if there is  line containing this point
+    private boolean checkLines(int x, int y){
+        for(Line line : lines){
+            if(line.checkPoint(x, y)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void DelaunayTriangulation(){
@@ -65,6 +88,7 @@ public class UpliftErosionGenerator extends gen {
         }
     }
 
+    //TODO change method for determining wether triangles are Delaunay
     private boolean canFlip(){
         for(Triangle triangle : triangles){
             if(triangle.ab != null) {
@@ -93,31 +117,26 @@ public class UpliftErosionGenerator extends gen {
         Triangle one = null;
         Triangle two = null;
 
-        if(primary.ab == secondary){
-            if(secondary.ab == primary){
-                one = new Triangle(primary.c, secondary.c, )
-            } else if(secondary.bc == primary) {
+        Triangle.orientate(primary, secondary);
+        Triangle.orientate(secondary, primary);
+        //both have common edge AB
+        if(primary.a != secondary.a)
+            secondary.reverse();
 
-            } else if(secondary.ca == primary) {
+        //both are orientated so that common edge is ab, and primary.a == secondary.a and primary.b == secondary.b
 
-            }
-        } else if(primary.bc == secondary) {
-            if(secondary.ab == primary){
-
-            } else if(secondary.bc == primary) {
-
-            } else if(secondary.ca == primary) {
-
-            }
-        } else if(primary.ca == secondary) {
-            if(secondary.ab == primary){
-
-            } else if(secondary.bc == primary) {
-
-            } else if(secondary.ca == primary) {
-
-            }
-        }
+        one = new Triangle(primary.a, primary.c, secondary.c);
+        two = new Triangle(primary.b, primary.c, secondary.c);
+        one.bc = two;
+        two.bc = one;
+        one.ab = primary.ca;
+        one.ca = secondary.ca;
+        two.ab = primary.bc;
+        two.ca = secondary.bc;
+        triangles.remove(primary);
+        triangles.remove(secondary);
+        triangles.add(one);
+        triangles.add(two);
     }
 
     private double getOpositeAngle(Triangle primary, Triangle secondary){
@@ -218,6 +237,7 @@ public class UpliftErosionGenerator extends gen {
 
     @Override
     void init() {
+        howMany = new int[mapSize][mapSize];
         values = new double[mapSize][mapSize];
         generatePoints();
     }
