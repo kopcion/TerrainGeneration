@@ -30,22 +30,49 @@ public class Triangle {
         return null;
     }
 
+    public void rotateTriangle(){
+        Point tmp = a;
+        a = b;
+        b = c;
+        c = tmp;
+        Triangle tmp2 = ab;
+        ab = bc;
+        bc = ca;
+        ca = tmp2;
+    }
+
+    public void reverse(){
+        Point tmp = b;
+        b = c;
+        c = tmp;
+        Triangle tmp2 = ab;
+        ab = ca;
+        ca = tmp2;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Triangle triangle = (Triangle) o;
-        return Objects.equals(a, triangle.a) &&
-                Objects.equals(b, triangle.b) &&
-                Objects.equals(c, triangle.c) &&
-                Objects.equals(ab, triangle.ab) &&
-                Objects.equals(bc, triangle.bc) &&
-                Objects.equals(ca, triangle.ca);
+        return ( (a == triangle.a || a == triangle.b || a == triangle.c)
+          &&(b == triangle.a || b == triangle.b || b == triangle.c)
+          &&(c == triangle.a || c == triangle.b || c == triangle.c));
+
     }
 
     @Override
     public int hashCode() {
 
         return Objects.hash(a, b, c, ab, bc, ca);
+    }
+
+    public static orientate(Triangle one, Triangle two){
+        for(int i=0; i < 3; i++){
+            if(one.ab == two){
+                break;
+            }
+            one.rotateTriangle();
+        }
     }
 }
