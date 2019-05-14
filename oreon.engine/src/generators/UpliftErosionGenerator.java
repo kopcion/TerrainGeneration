@@ -1,11 +1,10 @@
 package generators;
 
+import generators.utils.Line;
 import generators.utils.Point;
 import generators.utils.Triangle;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TransferQueue;
 
 import static generators.utils.Utils.isInsideTriangle;
@@ -21,10 +20,11 @@ public class UpliftErosionGenerator extends gen {
     private List<Point> hull = new LinkedList<>();
     private List<Triangle> triangles = new LinkedList<>();
     private List<Point> stack = new LinkedList<>();
-
+    private Map<Point, List<Triangle>>  neighboursOfPoint = new HashMap<>();
+    private Map<Point, Double> areaOfVoronoiCell = new HashMap<>();
     public UpliftErosionGenerator(){}
 
-    //TODO make it so that points are non collinear, check, mby refactor
+    //TODO make it so that points are non collinear
     private void generatePoints(){
         for(int i=0; i < Config.VORONOI_POINTS; i++){
             int x = random.nextInt(mapSize);
@@ -56,6 +56,81 @@ public class UpliftErosionGenerator extends gen {
         triangulate();
 
         while(canFlip()){}
+
+        for(Point point : hull){
+            point.isEdge = true;
+        }
+
+
+        //calculate both area of voroni cell for each point and its neighbours for later trees construction
+        for(Point point : points){
+            for(Triangle triangle : triangles){
+                if(triangle.contains(point)){
+                    if(!neighboursOfPoint.containsKey(point)){
+                        neighboursOfPoint.put(point, new LinkedList<>());
+                        areaOfVoronoiCell.put(point, (double) 0);
+                    }
+                    neighboursOfPoint.get(point).add(triangle);
+                    areaOfVoronoiCell.put(point, areaOfVoronoiCell.get(point) + triangle.area());
+                }
+            }
+        }
+
+        //elevatePoints();
+
+        constructTrees();
+
+        findLakes();
+    }
+
+    private void findLakes() {
+        for(Point point : points){
+            if (point.isEdge)
+                continue;
+            if(point.next == null){
+
+            }
+        }
+    }
+
+    private void elevatePoints() {
+        for(Point point : points){
+            point.raise();
+        }
+    }
+
+    private void constructTrees() {
+        for(Point point : points){
+            if(point.isEdge)
+                continue;
+
+            point.next = getLowestNeighbour(point);
+            if(point.next != null)
+                point.next.parent = point;
+        }
+    }
+
+    private Point getLowestNeighbour(Point point) {
+        double minHeight = Double.MAX_VALUE;
+        Point out = null;
+        for(Triangle triangle : neighboursOfPoint.get(point)){
+            if(triangle.a.equals(point)){
+                if(minHeight > triangle.a.heihgt)
+                    out = triangle.a;
+                minHeight = Math.min(minHeight, triangle.a.heihgt);
+            } else if(triangle.b.equals(point)){
+                if(minHeight > triangle.b.heihgt)
+                    out = triangle.b;
+                minHeight = Math.min(minHeight, triangle.b.heihgt);
+            } else if(triangle.c.equals(point)){
+                if(minHeight > triangle.c.heihgt)
+                    out = triangle.c;
+                minHeight = Math.min(minHeight, triangle.c.heihgt);
+            }
+        }
+        if(minHeight < point.heihgt)
+            return out;
+        return null;
     }
 
     private void triangulate() {
@@ -88,7 +163,6 @@ public class UpliftErosionGenerator extends gen {
         }
     }
 
-    //TODO change method for determining wether triangles are Delaunay
     private boolean canFlip(){
         for(Triangle triangle : triangles){
             if(triangle.ab != null) {
@@ -186,21 +260,6 @@ public class UpliftErosionGenerator extends gen {
     }
 
     private void convexHull() {
-        /*points.sort((a,b) -> {
-            if(a.x != b.x){
-                if(a.x < b.x)
-                    return -1;
-                if(a.x > b.x)
-                    return 1;
-            } else if(a.y != b.y){
-                if(a.y < b.y)
-                    return -1;
-                if(a.y > b.y)
-                    return 1;
-            }
-            return 0;
-        });*/
-
         int l = 0;
         for (int i = 1; i < points.size(); i++)
             if (points.get(i).x < points.get(l).x)
