@@ -1,14 +1,10 @@
 package generators;
 
-import generators.utils.Line;
-import generators.utils.Point;
-import generators.utils.Triangle;
+import generators.utils.*;
 
 import java.util.*;
-import java.util.concurrent.TransferQueue;
 
 import static generators.utils.Utils.isInsideTriangle;
-import static generators.utils.Utils.within;
 
 public class UpliftErosionGenerator extends gen {
 
@@ -22,9 +18,18 @@ public class UpliftErosionGenerator extends gen {
     private List<Point> stack = new LinkedList<>();
     private Map<Point, List<Triangle>>  neighboursOfPoint = new HashMap<>();
     private Map<Point, Double> areaOfVoronoiCell = new HashMap<>();
+    private List<Lake> lakes = new LinkedList<>();
+    private Set<LakePass> lakePasses = new HashSet<>();
     public UpliftErosionGenerator(){}
 
-    //TODO make it so that points are non collinear
+    private LakePass getPass(LakePass pass){
+        for(LakePass tmp : lakePasses){
+            if(tmp.equals(pass))
+                return tmp;
+        }
+        return null;
+    }
+
     private void generatePoints(){
         for(int i=0; i < Config.VORONOI_POINTS; i++){
             int x = random.nextInt(mapSize);
@@ -60,6 +65,7 @@ public class UpliftErosionGenerator extends gen {
         for(Point point : hull){
             point.isEdge = true;
         }
+        findPointNeighbours();
 
 
         //calculate both area of voroni cell for each point and its neighbours for later trees construction
@@ -76,19 +82,66 @@ public class UpliftErosionGenerator extends gen {
             }
         }
 
-        //elevatePoints();
-
         constructTrees();
 
         findLakes();
+
+        constructLakeGraph();
+    }
+
+    private void constructLakeGraph() {
+        for(Point point : points){
+            if(!point.isRiverMouth){
+                for(Point neigbour : point.getNeighbours()){
+                    if(neigbour.lakeId == point.lakeId){
+                        continue;
+                    }
+                    LakePass tmp = new LakePass(point.lake, neigbour.lake);
+                    LakePass newLake = new LakePass(point.lake, neigbour.lake, point, neigbour);
+                    if(lakePasses.contains(tmp)){
+                        //noinspection ConstantConditions
+                        if(getPass(tmp).getPassHeight() > newLake.getPassHeight()){
+                            lakePasses.remove(tmp);
+                            lakePasses.add(newLake);
+                        }
+                    } else {
+                        lakePasses.add(newLake);
+                    }
+                }
+            }
+        }
+
+        for (LakePass pass : lakePasses){
+            pass.updateLakes();
+        }
+    }
+
+    private void findPointNeighbours(){
+        for(Triangle triangle : triangles){
+            triangle.a.addNeighbour(triangle.b);
+            triangle.a.addNeighbour(triangle.c);
+
+            triangle.b.addNeighbour(triangle.a);
+            triangle.b.addNeighbour(triangle.c);
+
+            triangle.c.addNeighbour(triangle.a);
+            triangle.c.addNeighbour(triangle.b);
+        }
     }
 
     private void findLakes() {
+        //mark river mouths
+        for(Point point : hull){
+            point.markRiverMouth();
+        }
+
         for(Point point : points){
-            if (point.isEdge)
+            if(point.lakeId != -1 || point.isRiverMouth)
                 continue;
             if(point.next == null){
-
+                lakes.add(new Lake(Point.ID));
+                point.markLake(lakes.get(lakes.size()-1));
+                Point.ID++;
             }
         }
     }
@@ -110,25 +163,26 @@ public class UpliftErosionGenerator extends gen {
         }
     }
 
+    //TODO refactor, use point.neighbours
     private Point getLowestNeighbour(Point point) {
         double minHeight = Double.MAX_VALUE;
         Point out = null;
         for(Triangle triangle : neighboursOfPoint.get(point)){
             if(triangle.a.equals(point)){
-                if(minHeight > triangle.a.heihgt)
+                if(minHeight > triangle.a.height)
                     out = triangle.a;
-                minHeight = Math.min(minHeight, triangle.a.heihgt);
+                minHeight = Math.min(minHeight, triangle.a.height);
             } else if(triangle.b.equals(point)){
-                if(minHeight > triangle.b.heihgt)
+                if(minHeight > triangle.b.height)
                     out = triangle.b;
-                minHeight = Math.min(minHeight, triangle.b.heihgt);
+                minHeight = Math.min(minHeight, triangle.b.height);
             } else if(triangle.c.equals(point)){
-                if(minHeight > triangle.c.heihgt)
+                if(minHeight > triangle.c.height)
                     out = triangle.c;
-                minHeight = Math.min(minHeight, triangle.c.heihgt);
+                minHeight = Math.min(minHeight, triangle.c.height);
             }
         }
-        if(minHeight < point.heihgt)
+        if(minHeight < point.height)
             return out;
         return null;
     }
@@ -172,7 +226,7 @@ public class UpliftErosionGenerator extends gen {
                 }
             }
             if(triangle.bc != null){
-                    if(angle(triangle.c, triangle.a, triangle.b) + getOpositeAngle(triangle, triangle.bc) > Math.PI){
+                if(angle(triangle.c, triangle.a, triangle.b) + getOpositeAngle(triangle, triangle.bc) > Math.PI){
                     flipTriangles(triangle, triangle.bc);
                     return true;
                 }
@@ -288,7 +342,7 @@ public class UpliftErosionGenerator extends gen {
 
     private int orientation(Point a, Point b, Point c){
         int val = (int) ((b.y - a.y) * (c.x - b.x) -
-                        (b.x - a.x) * (c.y - b.y));
+                (b.x - a.x) * (c.y - b.y));
 
         if (val == 0) return 0;  // colinear
         return (val > 0)? 1: 2; // clock or counterclock wise
