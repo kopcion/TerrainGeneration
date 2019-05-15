@@ -33,4 +33,8 @@ public class Utils {
                 + new Triangle(point, triangle.c, triangle.a).area()
         );
     }
+
+    public static void findLakePass(Lake first, Lake second){
+
+    }
 }

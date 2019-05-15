@@ -14,10 +14,10 @@ public class Line{
     }
 
     public Line(Point one, Point two){
-        x1 = one.x;
-        y1 = one.y;
-        x2 = two.x;
-        y2 = two.y;
+        x1 = (int) one.x;
+        y1 = (int) one.y;
+        x2 = (int) two.x;
+        y2 = (int) two.y;
     }
 
     public boolean checkPoint(int x, int y) {

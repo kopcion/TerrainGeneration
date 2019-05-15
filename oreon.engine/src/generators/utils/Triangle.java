@@ -61,13 +61,17 @@ public class Triangle {
 
     }
 
+    public boolean contains(Point point){
+        return point.equals(a) || point.equals(b) || point.equals(c);
+    }
+
     @Override
     public int hashCode() {
 
         return Objects.hash(a, b, c, ab, bc, ca);
     }
 
-    public static orientate(Triangle one, Triangle two){
+    public static void orientate(Triangle one, Triangle two){
         for(int i=0; i < 3; i++){
             if(one.ab == two){
                 break;
