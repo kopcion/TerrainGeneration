@@ -2,6 +2,7 @@ package core.kernel;
 
 import core.kernel.Window;
 import modules.sky.Skydome;
+import modules.terrain.Terrain;
 import core.configs.Default;
 import core.kernel.Camera;
 
@@ -16,17 +17,20 @@ public class RenderingEngine {
 	
 	private Window window;
 	private Skydome skydome;
+	private Terrain terrain;
 	
 
 	public RenderingEngine()
 	{
 		window = Window.getInstance();
 		skydome = new Skydome();
+		terrain = new Terrain();
 	}
 	
 	public void init()
 	{
 		window.init();
+		terrain.init("./res/settings/terrain_settings.txt");
 	}
 
 	public void render()
@@ -36,6 +40,8 @@ public class RenderingEngine {
 		Default.clearScreen();
 		
 		skydome.render();
+		terrain.updateQuadtree();
+		terrain.render();
 		// draw into OpenGL window
 		window.render();
 	}

@@ -13,6 +13,7 @@ public class Skydome extends GameObject{
 	
 	public Skydome()
 	{
+		getWorldTransform().setScaling(Constants.ZFAR*0.5f, Constants.ZFAR*0.5f, Constants.ZFAR*0.5f);
 		
 		// Loading model data into application memory
 		Mesh mesh = new OBJLoader().load("./res/models/dome", "dome.obj", null)[0].getMesh();
@@ -25,8 +26,6 @@ public class Skydome extends GameObject{
 		renderer.setVbo(meshBuffer);
 		renderer.setRenderInfo(new RenderInfo(new CCW(), AtmosphereShader.getInstance()));
 		addComponent(Constants.RENDERER_COMPONENT, renderer);
-		
-		getTransform().setScaling(Constants.ZFAR*0.5f, Constants.ZFAR*0.5f, Constants.ZFAR*0.5f);
 		
 	}
 }

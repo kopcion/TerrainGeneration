@@ -20,8 +20,8 @@ public class AtmosphereShader extends Shader {
 	{
 		super();
 
-		addVertexShader(ResourceLoader.loadShader("shaders/atmosphere_VS.glsl")); 
-		addFragmentShader(ResourceLoader.loadShader("shaders/atmosphere_FS.glsl")); 
+		addVertexShader(ResourceLoader.loadShader("shaders/sky/atmosphere_VS.glsl")); 
+		addFragmentShader(ResourceLoader.loadShader("shaders/sky/atmosphere_FS.glsl")); 
 		compileShader();
 		
 		addUniform("m_MVP");
@@ -30,7 +30,8 @@ public class AtmosphereShader extends Shader {
 		
 	public void updateUniforms(GameObject object)
 	{
-		setUniform("m_MVP", object.getTransform().getMVP());
-		setUniform("m_World", object.getTransform().getWorldMatrix());
+		setUniform("m_MVP", object.getWorldTransform().getMVP());
+		setUniform("m_World", object.getWorldTransform().getWorldMatrix());
 	}
+	
 }

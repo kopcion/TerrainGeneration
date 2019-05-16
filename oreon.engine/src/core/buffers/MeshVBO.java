@@ -21,7 +21,6 @@ public class MeshVBO implements VBO {
 		vaoId = GL30.glGenVertexArrays();
 	}
 	
-	@Override
 	public void allocate(Mesh mesh) {
 		size = mesh.getIndices().length;
 		
@@ -40,7 +39,6 @@ public class MeshVBO implements VBO {
 		GL30.glBindVertexArray(0);
 	}
 
-	@Override
 	public void draw() {
 		GL30.glBindVertexArray(vaoId);
 		
@@ -58,7 +56,6 @@ public class MeshVBO implements VBO {
 		
 	}
 
-	@Override
 	public void delete() {
 		GL30.glBindVertexArray(vaoId);
 		GL15.glDeleteBuffers(vbId);
