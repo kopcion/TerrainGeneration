@@ -23,7 +23,7 @@ public class MenuController {
     final FileChooser fileChooser = new FileChooser();
 
     public void SingleFileButton(){
-        fileChooser.setInitialDirectory(new File("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res"));
+//        fileChooser.setInitialDirectory(new File("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res"));
         File file = fileChooser.showOpenDialog(SingleButton.getScene().getWindow());
         if(file == null){
             try {
@@ -41,6 +41,7 @@ public class MenuController {
         System.out.println("single button");
 
         //start engine
+        LaunchGame.launch();
         SingleButton.getScene().getWindow().hide();
     }
 
