@@ -10,16 +10,14 @@ import static generators.utils.Utils.isInsideTriangle;
 public class UpliftErosionGenerator extends gen {
 
     private static int TIME = 0;
+    int counter = 0;
 
-    private int[][] howMany;
-    private double[][] values;
     private List<Line> lines = new LinkedList<>();
     private static Random random = new Random();
     private List<Point> points = new LinkedList<>();
     private List<Point> hull = new LinkedList<>();
     private List<Triangle> triangles = new LinkedList<>();
     private List<Point> roots = new LinkedList<>();
-//    private Map<Point, List<Triangle>>  neighboursOfPoint = new HashMap<>();
     private List<Lake> lakes = new LinkedList<>();
     private Set<LakePass> lakePasses = new HashSet<>();
     public UpliftErosionGenerator(){}
@@ -33,8 +31,8 @@ public class UpliftErosionGenerator extends gen {
     }
 
     private void generatePoints(){
-//        for(int i=0; i < Config.VORONOI_POINTS; i++){
-        for(int i=0; i < 20; i++){
+        for(int i=0; i < Config.VORONOI_POINTS; i++){
+//        for(int i=0; i < 20; i++){
             int x = random.nextInt(mapSize);
             int y = random.nextInt(mapSize);
 
@@ -56,6 +54,11 @@ public class UpliftErosionGenerator extends gen {
                 i--;
             }
         }
+        values = new PerlinNoiseGenerator().calculateAndGetValues(mapSize);
+        for(Point point : points){
+            point.uplift = values[(int)point.x][(int)point.y];
+            point.height = 10 * point.uplift;
+        }
     }
 
     //returns true if there is  line containing this point
@@ -70,44 +73,50 @@ public class UpliftErosionGenerator extends gen {
 
     private void DelaunayTriangulation(){
         triangulate();
-        checkTriangles();
+
+//        checkTriangles();
         System.out.println("triangulated");
 
-        int iterations = 100;
-//        while(iterations-- > 0){canFlip();}
         while(canFlip()){}
         System.out.println("did flipping with " + counter);
-        checkTriangles();
+//        checkTriangles();
 
         for(Point point : hull){
             point.isEdge = true;
             roots.add(point);
         }
+
         findPointNeighbours();
         for(Point point : points){
             System.out.println(point + " has list size " + point.neighbours.size());
         }
+
         System.out.println("extracted neighbours");
 
         calculateAreasOfVoronoiCells();
         System.out.println("calculated areas");
 
-        constructTrees();
-        System.out.println("constructed trees");
+        int iterations = 100;
+        while(iterations-- > 0){
+            System.out.println("\niteration no. " + (100-iterations) + "\n");
+            constructTrees();
+//        System.out.println("constructed trees");
 
-        findLakes();
-        System.out.println("found lakes");
+            findLakes();
+//        System.out.println("found lakes");
 
-        constructLakeGraph();
-        System.out.println("constructed lake graph");
+            constructLakeGraph();
+//        System.out.println("constructed lake graph");
 
-        updateAreasOfPoints();
+            updateAreasOfPoints();
+
+            computeStreamPowerEquation();
+        }
 
         for(Point point : points){
             System.out.println(point.areaOfCell);
+            System.out.println(point + " has height of " + point.height);
         }
-
-        computeStreamPowerEquation();
     }
 
     private void calculateAreasOfVoronoiCells() {
@@ -224,11 +233,6 @@ public class UpliftErosionGenerator extends gen {
     }
 
     private void findLakes() {
-        //mark river mouths
-        for(Point point : hull){
-            point.markRiverMouth();
-        }
-
         for(Point point : points){
             if(point.isRiverMouth){
                 lakes.add(new Lake(Point.ID));
@@ -258,6 +262,7 @@ public class UpliftErosionGenerator extends gen {
                 continue;
 
             point.next = getLowestNeighbour(point);
+            System.out.println(point.next);
             if(point.next != null)
                 point.next.parents.add(point);
         }
@@ -267,12 +272,14 @@ public class UpliftErosionGenerator extends gen {
         double minHeight = Double.MAX_VALUE;
         Point out = null;
         for(Point neighbour : point.getNeighbours()){
-            if(minHeight >= neighbour.height){
+            if(minHeight > neighbour.height){
                 out = neighbour;
+                minHeight = neighbour.height;
             }
         }
-        if(minHeight <= point.height)
+        if(minHeight < point.height)
             return out;
+        System.out.println("returning null");
         return null;
     }
 
@@ -330,6 +337,10 @@ public class UpliftErosionGenerator extends gen {
                 }
             }
         }
+
+        for(Point point : hull){
+            point.markRiverMouth();
+        }
     }
 
     public boolean checkIfPointLiesInsideTrianglesCircle(Triangle triangle, Point point){
@@ -353,7 +364,7 @@ public class UpliftErosionGenerator extends gen {
     public enum ORIENTATION{
         COLLINEAR, CLOCKWISE, COUNTERCLOCKWISE
     }
-    int counter = 0;
+
     private boolean canFlip(){
         checkTriangles();
         boolean out = false;
@@ -531,7 +542,7 @@ public class UpliftErosionGenerator extends gen {
         assert (!one.equals(two) || !one.equals(three) || !two.equals(three));
     }
 
-    private void convexHull() {
+    private void convexHull(){
         int l = 0;
         for (int i = 1; i < points.size(); i++)
             if (points.get(i).x < points.get(l).x)
@@ -568,14 +579,12 @@ public class UpliftErosionGenerator extends gen {
 
     @Override
     void init() {
-        howMany = new int[mapSize][mapSize];
         values = new double[mapSize][mapSize];
         generatePoints();
     }
 
     @Override
     void calculate() {
-        generatePoints();
 
         DelaunayTriangulation();
     }
