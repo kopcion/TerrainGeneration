@@ -1,12 +1,14 @@
 package generators.utils;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
+
 import java.util.Objects;
 
 public class LakePass {
-    Lake first;
-    Lake second;
-    Point a;
-    Point b;
+    public Lake first;
+    public Lake second;
+    public Point a;
+    public Point b;
 
     public LakePass(Lake first, Lake second, Point a, Point b) {
         this.first = first;
@@ -25,6 +27,7 @@ public class LakePass {
     }
 
     public void updateLakes(){
+        System.out.println((first == null) + " " + (second == null) + "kappa");
         first.neighbours.add(this);
         second.neighbours.add(this);
     }
@@ -34,15 +37,12 @@ public class LakePass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LakePass lakePass = (LakePass) o;
-        return Objects.equals(first, lakePass.first) &&
-                Objects.equals(second, lakePass.second) ||
-                Objects.equals(second, lakePass.first) &&
-                Objects.equals(first, lakePass.second);
+        return Objects.equals(first, lakePass.first) && Objects.equals(second, lakePass.second)
+               || Objects.equals(second, lakePass.first) && Objects.equals(first, lakePass.second);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(first, second, a, b);
+        return Objects.hash(first, second);
     }
 }
