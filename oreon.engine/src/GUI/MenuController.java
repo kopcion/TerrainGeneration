@@ -1,5 +1,6 @@
 package GUI;
 
+import generators.MainGenerator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,6 +23,14 @@ public class MenuController {
 
     final FileChooser fileChooser = new FileChooser();
 
+    public void generateSample(){
+        try {
+            MainGenerator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void SingleFileButton(){
 //        fileChooser.setInitialDirectory(new File("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res"));
         File file = fileChooser.showOpenDialog(SingleButton.getScene().getWindow());
@@ -33,15 +42,14 @@ public class MenuController {
             }
             return;
         }
-        try {
-            Files.copy(file.toPath(), FileSystems.getDefault().getPath("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res\\heightmap", "heightmap1.bmp"), REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Files.copy(file.toPath(), FileSystems.getDefault().getPath("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res\\heightmap", "heightmap1.bmp"), REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         System.out.println("single button");
 
         //start engine
-        LaunchGame.launch();
         SingleButton.getScene().getWindow().hide();
     }
 

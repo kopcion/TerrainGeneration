@@ -75,4 +75,14 @@ public class PerlinNoiseGenerator extends gen{
         gradientsY = new double[ (int)(mapSize / Config.RESOLUTION) + 2][ (int)(mapSize / Config.RESOLUTION) + 2];
         generateGradients();
     }
+
+    public double[][] calculateAndGetValues(int mapSize) {
+        this.mapSize = mapSize;
+
+        init();
+
+        calculate();
+
+        return values;
+    }
 }
