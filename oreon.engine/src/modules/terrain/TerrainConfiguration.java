@@ -24,7 +24,7 @@ public class TerrainConfiguration {
 		this.scaleY = 600;
 		this.scaleXZ = 6000;
 		
-		this.heightmap = new Texture2D("./res/heightmap/2.bmp");	
+		this.heightmap = new Texture2D("./oreon.engine/res/heightmap/2.bmp");
 		this.heightmap.bind();
 		this.heightmap.bilinearFilter();
 		

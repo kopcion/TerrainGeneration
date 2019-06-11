@@ -28,6 +28,7 @@ public class MenuController {
 
     public void SingleFileButton(){
         fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
+//        fileChooser.setInitialDirectory(new File("./res"));
         File file = fileChooser.showOpenDialog(SingleButton.getScene().getWindow());
         if(file == null){
             try {
@@ -38,14 +39,14 @@ public class MenuController {
             return;
         }
         try {
-            Files.copy(file.toPath(), FileSystems.getDefault().getPath(Config.PATH + "heightmap/", "heightmap1.bmp"), REPLACE_EXISTING);
+            Files.copy(file.toPath(), FileSystems.getDefault().getPath(Config.PATH + "heightmap/", "2.bmp"), REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         //start engine
-        LaunchGame.launch();
         SingleButton.getScene().getWindow().hide();
+        LaunchGame.launch();
     }
 
     public void generateSampleHeightmaps() {

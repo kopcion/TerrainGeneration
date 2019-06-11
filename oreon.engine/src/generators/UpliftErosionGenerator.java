@@ -329,7 +329,7 @@ public class UpliftErosionGenerator extends gen {
 
                 if(triangle.ca != null) {
                     Point oppositePoint = triangle.getOpositePoint(triangle.a, triangle.c);
-                    if (oppositePoint == null){ //opposite point doesnt exist
+                    if (oppositePoint == null){
                         triangle.rotateTriangle();
                         continue;
                     }

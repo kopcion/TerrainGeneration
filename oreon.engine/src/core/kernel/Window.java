@@ -64,7 +64,7 @@ public class Window {
 		    throw new RuntimeException("Failed to create window");
 		}
 		
-		ByteBuffer bufferedImage = ImageLoader.loadImageToByteBuffer("./res/logo/oreon_lwjgl_icon32.png");
+		ByteBuffer bufferedImage = ImageLoader.loadImageToByteBuffer("./oreon.engine/res/logo/oreon_lwjgl_icon32.png");
 		
 		GLFWImage image = GLFWImage.malloc();
 		

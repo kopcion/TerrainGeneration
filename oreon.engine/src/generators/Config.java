@@ -3,6 +3,7 @@ package generators;
 public class Config {
 	public static final int MAP_SIZE = 1025;
 	public static String PATH = "./oreon.engine/res/";
+//	public static String PATH = "./res/";
 //	public static String RESOURCE_PATH = "C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res\\heightmap";
 	public static final double AMPLITUDE = 1;
 	public static final double SMOOTHING_PARAM = 0.6d;

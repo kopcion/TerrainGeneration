@@ -31,7 +31,7 @@ public class FileGenerator {
 	public static void generateFileInPlace(double values[][]) {
 		try {
 			RenderedImage img = getRenderedImage(values);
-			ImageIO.write(img, "bmp", new File(Config.PATH + "heightmap/1.bmp"));
+			ImageIO.write(img, "bmp", new File(Config.PATH + "heightmap/2.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
