@@ -14,6 +14,7 @@ import core.math.Matrix4f;
 import core.math.Quaternion;
 import core.math.Vec2f;
 import core.math.Vec3f;
+import core.scene.Node;
 import core.utils.BufferUtil;
 
 /**
@@ -180,4 +181,8 @@ public abstract class Shader {
 	{
 		return this.program;
 	}
+	
+	public void update(Node object) {
+		
+	};
 }
