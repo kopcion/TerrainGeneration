@@ -63,7 +63,7 @@ public class Camera {
 	
 	protected Camera()
 	{
-		this(new Vec3f(-200,20,-20), new Vec3f(1,0,-1).normalize(), new Vec3f(0,1,0));
+		this(new Vec3f(0,600,0), new Vec3f(1,0,-1).normalize(), new Vec3f(0,1,0));
 		setProjection(70, Window.getInstance().getWidth(), Window.getInstance().getHeight());
 		setViewMatrix(new Matrix4f().View(this.getForward(), this.getUp()).mul(
 				new Matrix4f().Translation(this.getPosition().mul(-1))));
