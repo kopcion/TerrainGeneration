@@ -1,50 +1,50 @@
 package modules.terrain;
 
-import core.buffers.PatchVBO;
+import core.buffers.VerticesVertexBufferObject;
 import core.configs.Default;
 import core.kernel.Camera;
 import core.math.Vec2f;
 import core.math.Vec3f;
-import core.renderer.RenderInfo;
 import core.renderer.Renderer;
-import core.scene.GameObject;
 import core.scene.Node;
 import core.utils.Constants;
 
 
-public class TerrainNode extends GameObject {
+public class TerrainNode extends Node {
 	
 	private boolean isleaf;
-	private TerrainConfig config;
-	private int lod;
+	private TerrainConfiguration config;
+	private int leverOfDetails;
 	private Vec2f location;
-	private Vec3f worldPos;
+	private Vec3f worldPosition;
 	private Vec2f index;
-	private float gap;
-	private PatchVBO buffer;
+	private float gap; // side length of a patch
+	private VerticesVertexBufferObject buffer;
 	
-	
-	public TerrainNode(PatchVBO buffer, TerrainConfig terrainConfig, Vec2f location, int lod, Vec2f index) {
+	public TerrainNode(VerticesVertexBufferObject buffer, TerrainConfiguration terrainConfig, Vec2f location, int lod, Vec2f index) {
 		this.buffer = buffer;
 		this.config = terrainConfig;
 		this.index = index;
-		this.lod = lod;
+		this.leverOfDetails = lod;
 		this.location = location;
-		this.gap = 1f/(TerrainQuadtree.getRootNodes() * (float)(Math.pow(2, lod)));
 		
+		// calculating sidelength of a patch
+		this.gap = 1f/((float)(Math.pow(2, lod) * Quadtree.getRootNodes()));
+		
+		// transforming node within a quadtree:
 		Vec3f localScaling = new Vec3f(gap, 0, gap);
 		Vec3f localTranslation = new Vec3f(location.getX(), 0, location.getY());
 		
-		getLocalTransform().setScaling(localScaling);
+		getLocalTransform().setScale(localScaling);
 		getLocalTransform().setTranslation(localTranslation);
 		
-		getWorldTransform().setScaling(new Vec3f(terrainConfig.getScaleXZ(), terrainConfig.getScaleY(), terrainConfig.getScaleXZ()));
+		// transforming quad within the world space:
+		getWorldTransform().setScale(new Vec3f(terrainConfig.getScaleXZ(), terrainConfig.getScaleY(), terrainConfig.getScaleXZ()));
 		getWorldTransform().setTranslation(new Vec3f(-terrainConfig.getScaleXZ()/2f, 0, -terrainConfig.getScaleXZ()/2f));
 	
-		Renderer renderer = new Renderer();
-		renderer.setVbo(buffer);
-		renderer.setRenderInfo(new RenderInfo(new Default(), TerrainShader.getInstance()));
-		
+		// creating renderer to draw terrain nodes:
+		Renderer renderer = new Renderer(buffer);
+		renderer.setRenderInfo(new Default(), TerrainShader.getInstance());
 		addComponent(Constants.RENDERER_COMPONENT, renderer);
 		
 		computeWorldPos();
@@ -52,117 +52,102 @@ public class TerrainNode extends GameObject {
 	}
 	
 	public void render() {
+		// rendering leafs and childs of nodes:
 		if(isleaf) {
 			getComponents().get(Constants.RENDERER_COMPONENT).render();
 		}
 		
-		for(Node child : getChildren()) {
+		for(Node child : getRelatedNodes()) {
 			child.render();
 		}
 	}
 	
 	public void updateQuadtree() {
 		if(Camera.getInstance().getPosition().getY() > config.getScaleY()) {
-			worldPos.setY(config.getScaleY());
+			worldPosition.setY(config.getScaleY());
 		}
 		else {
-			worldPos.setY(Camera.getInstance().getPosition().getY());
+			worldPosition.setY(Camera.getInstance().getPosition().getY());
 		}
 		
-		updateChildNodes();
+		updateRelatedNodes();
 		
-		for(Node child : getChildren()) {
+		for(Node child : getRelatedNodes()) {    
 			((TerrainNode) child).updateQuadtree();
 		}
 	}
 	
-	private void addChildNodes(int lod) {
+	// Adding childNodes while increasing level of details:
+	private void addRelatedNodes(int lod) {
 		if(isleaf) {
 			isleaf = false;
 		}
-		
-		if(getChildren().size() == 0) {
+		if(getRelatedNodes().size() == 0) {
 			for(int i = 0; i < 2; i++) {
 				for(int j = 0 ; j < 2; j++) {
-					addChild(new TerrainNode(buffer, config, location.add(new Vec2f(i*gap/2f, j*gap/2f)), lod, new Vec2f(i, j)));
+					addNode(new TerrainNode(buffer, config, location.add(new Vec2f(i*gap/2f, j*gap/2f)), lod, new Vec2f(i, j)));
 				}
 			}
 		}
 	}
 	
-	private void removeChildNodes() {
+	// Removing relatedNodes when we want to make level of details smaller:
+	private void removeRelatedNodes() {
 		if(!isleaf) {
 			isleaf = true;
 		}
 		
-		if(getChildren().size() != 0) {
-			getChildren().clear();
+		if(getRelatedNodes().size() != 0) {
+			getRelatedNodes().clear();
 		}
 	}
 	
-	private void updateChildNodes() {
-	
-		float distance = (Camera.getInstance().getPosition().sub(worldPos)).length();
-		if(distance < config.getLod_range()[lod]) {
-			addChildNodes(lod+1);
-		} else if(distance >= config.getLod_range()[lod]) {
-			removeChildNodes();
+	// Updating nodes while camera movement
+	private void updateRelatedNodes() {
+		// getting camera distance 
+		float distance = (Camera.getInstance().getPosition().sub(worldPosition)).length();
+		
+		if(distance >= config.getLod_range()[leverOfDetails]) {
+			removeRelatedNodes();
+			
+		} else {
+			addRelatedNodes(leverOfDetails+1);
 		}
 	}
 	
+	// Setting world position:
 	public void computeWorldPos() {
 		Vec2f loc = location.add(gap/2f).mul(config.getScaleXZ()).sub(config.getScaleXZ()/2f);
 		
-		worldPos = new Vec3f(loc.getX(), 0, loc.getY());
+		worldPosition = new Vec3f(loc.getX(), 0, loc.getY());
 	}
 	
-	public boolean isIsleaf() {
-		return isleaf;
-	}
-	public void setIsleaf(boolean isleaf) {
-		this.isleaf = isleaf;
-	}
-	public TerrainConfig getConfig() {
+	//Getters:
+	public TerrainConfiguration getConfig() {
 		return config;
 	}
-	public void setConfig(TerrainConfig config) {
-		this.config = config;
+	
+	public int getLevelOfDetails() {
+		return leverOfDetails;
 	}
-	public int getLod() {
-		return lod;
-	}
-	public void setLod(int lod) {
-		this.lod = lod;
-	}
+
 	public Vec2f getLocation() {
 		return location;
 	}
-	public void setLocation(Vec2f location) {
-		this.location = location;
-	}
+	
 	public Vec3f getWorldPos() {
-		return worldPos;
+		return worldPosition;
 	}
-	public void setWorldPos(Vec3f worldPos) {
-		this.worldPos = worldPos;
-	}
+	
 	public Vec2f getIndex() {
 		return index;
 	}
-	public void setIndex(Vec2f index) {
-		this.index = index;
-	}
+	
 	public float getGap() {
 		return gap;
 	}
-	public void setGap(float gap) {
-		this.gap = gap;
-	}
-	public PatchVBO getBuffer() {
+	
+	public VerticesVertexBufferObject getBuffer() {
 		return buffer;
 	}
-	public void setBuffer(PatchVBO buffer) {
-		this.buffer = buffer;
-	}
-	
 }

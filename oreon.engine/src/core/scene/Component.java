@@ -2,9 +2,10 @@ package core.scene;
 
 import core.math.Transform;
 
-public abstract class Component{
+// Component object to be able to deal with objects in game as Terrain and Sky 
+public abstract class Component {
 	
-	private GameObject parent;
+	private Node parent;
 	
 	public void update(){};
 	
@@ -12,11 +13,11 @@ public abstract class Component{
 	
 	public void render(){};
 	
-	public GameObject getParent() {
+	public Node getParent() {
 		return parent;
 	}
 
-	public void setParent(GameObject parent) {
+	public void setParent(Node parent) {
 		this.parent = parent;
 	}
 

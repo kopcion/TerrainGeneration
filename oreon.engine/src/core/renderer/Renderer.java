@@ -1,41 +1,32 @@
 package core.renderer;
 
-import core.buffers.VBO;
+import core.buffers.VertexBufferObject;
+import core.configs.RenderConfig;
 import core.scene.Component;
+import core.shaders.Shader;
 
-public class Renderer extends Component{
+//Renderer class for storing data (VertexBufferObject) and drawing it
+public class Renderer extends Component {
 	
-	private VBO vbo;
-	private RenderInfo renderInfo;
+	private RenderConfig config;
+	private Shader shader;
+	private VertexBufferObject vertexBufferObject;
 	
-	public Renderer(){}
-	
-	public Renderer(VBO vao)
+	public Renderer(VertexBufferObject vbo)
 	{
-		this.vbo = vao;
+		this.vertexBufferObject = vbo;
 	}
 	
 	public void render(){
-		renderInfo.getConfig().enable();
-		renderInfo.getShader().bind();			
-		renderInfo.getShader().updateUniforms(getParent());
-		getVbo().draw();
-		renderInfo.getConfig().disable();
+		this.config.enable();
+		this.shader.bind();	
+		this.shader.update(getParent());
+		this.vertexBufferObject.draw();
+		this.config.disable();
 	};
 
-	public VBO getVbo() {
-		return vbo;
-	}
-
-	public void setVbo(VBO vbo) {
-		this.vbo = vbo;
-	}
-
-	public RenderInfo getRenderInfo() {
-		return renderInfo;
-	}
-
-	public void setRenderInfo(RenderInfo renderinfo) {
-		this.renderInfo = renderinfo;
+	public void setRenderInfo(RenderConfig config, Shader shader) {
+		this.config = config;
+		this.shader = shader;
 	}
 }
