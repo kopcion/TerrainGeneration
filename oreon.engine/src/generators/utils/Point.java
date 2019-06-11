@@ -8,14 +8,14 @@ import static generators.Config.EROSION_CONSTANT;
 
 public class Point {
     public static int ID = 0;
-    public static double timeInterval = 100d;
+    private static double timeInterval = 100d;
 
     public double x,y;
     public Point next = null;
     public Point secondNext = null;
     public List<Point> parents= new LinkedList<>();
     public List<Point> parentsFromLakes = new LinkedList<>();
-    public Set<Point> neighbours = new HashSet<>();
+    private Set<Point> neighbours = new HashSet<>();
     public double height = 0d;
     public double uplift = 0d;
     public boolean isEdge = false;
@@ -23,23 +23,20 @@ public class Point {
     public int lakeId = -1;
     public Lake lake = null;
     public double areaOfCell = 0d;
-    public double drainageArea = 0d;
-    public int lastUpdated = -1;
+    private double drainageArea = 0d;
     public boolean isDone = false;
-    public double value = 0d;
+    private double value = 0d;
     public List<Point> voronoiCell = new LinkedList<>();
-    public List<Point> hull = new LinkedList<>();
+    private List<Point> hull = new LinkedList<>();
 
     public Set<Point> getNeighbours() {
         return neighbours;
     }
 
     public void compute(){
-        System.out.println(isDone + " " + isEdge + " " + (next == null && secondNext == null));
         if(isDone || isEdge || next == null && secondNext == null) return;
         isDone = true;
 
-        System.out.println("computing");
         if(next != null) next.compute();
         if(next == null && secondNext != null) secondNext.compute();
 
@@ -57,11 +54,6 @@ public class Point {
     public void calculateVoronoiCellArea(){
         if(isEdge || voronoiCell.size() < 3) return;
 
-        System.out.println("size: " + voronoiCell.size());
-
-        for(Point point : voronoiCell){
-            System.out.println("\t (x,y) == (" + point.x + ", " + point.y + ")");
-        }
         int l = 0;
         for (int i = 1; i < voronoiCell.size(); i++)
             if (voronoiCell.get(i).x < voronoiCell.get(l).x)
@@ -71,25 +63,21 @@ public class Point {
 
         do
         {
-//            System.out.println(p);
             hull.add(voronoiCell.get(p));
             q = (p + 1) % voronoiCell.size();
 
             for (int i = 0; i < voronoiCell.size(); i++)
             {
-//                System.out.println("orientation : " + orientation(voronoiCell.get(p), voronoiCell.get(i), voronoiCell.get(q)));
                 if (orientation(voronoiCell.get(p), voronoiCell.get(i), voronoiCell.get(q)) == UpliftErosionGenerator.ORIENTATION.COUNTERCLOCKWISE)
                     q = i;
             }
             p = q;
 
         } while (p != l);
-        System.out.println("kappa");
 
         Point base = hull.get(0);
         Point first = hull.get(1);
         Point second = hull.get(2);
-        Point base2 = base;
         Point first2 = first;
         Point second2 = second;
         hull.remove(base);
@@ -103,7 +91,7 @@ public class Point {
         areaOfCell += new Triangle(base, second, first2).area();
         hull.add(0, second2);
         hull.add(0, first2);
-        hull.add(0, base2);
+        hull.add(0, base);
     }
 
     private UpliftErosionGenerator.ORIENTATION orientation(Point a, Point b, Point c){
@@ -136,10 +124,6 @@ public class Point {
         this.y = y;
     }
 
-    public void raise(){
-        height += uplift;
-    }
-
     public void addNeighbour(Point point){
         neighbours.add(point);
     }
@@ -149,8 +133,6 @@ public class Point {
         for(Point point : parents){
             point.markRiverMouth();
         }
-//        if(parent != null)
-//            parent.markRiverMouth();
     }
 
     @Override

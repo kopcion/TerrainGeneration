@@ -7,6 +7,10 @@ import java.io.IOException;
 import static generators.Config.SMOOTHIG_RANGE;
 
 public class Smoother {
+    /*
+     * @deprecated Use smooth(double[][]) and then generate file with those values
+     */
+    @Deprecated()
     public static void smooth(String fileName) throws IOException {
         double values[][] = FileGenerator.loadFromFile(fileName);
         double smoothedValues[][] = new double[values.length][values[0].length];
@@ -17,7 +21,7 @@ public class Smoother {
             }
         }
 
-        FileGenerator.generateFile(smoothedValues, fileName.substring(0, fileName.length()-4) + "Smoothed");
+//        FileGenerator.generateFile(smoothedValues, fileName.substring(0, fileName.length()-4) + "Smoothed");
     }
 
     public static double[][] smooth(double[][] values){
@@ -50,7 +54,7 @@ public class Smoother {
                 }
             }
         }
-//        System.out.println("Returning " + value/weight + " with value " + value + " and weight " + weight + "\n\toriginal value " + values[x][y]);
+
         return value/weight;
     }
 }

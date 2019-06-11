@@ -4,14 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainGenerator {
-    public static void generate(){
+    public static boolean generate(){
         List<gen> generators = new LinkedList<>();
         for(int i=0; i < 5; i++){
             generators.add(new MidPointDisplacementGenerator(i));
             generators.add(new DiamondSquareGenerator());
             generators.add(new PerlinNoiseGenerator(i));
-//            generators.add(new generators.UpliftErosionGenerator()); TODO enable with correct generator
         }
+        generators.add(new generators.UpliftErosionGenerator());
 
         List<Thread> threads = new LinkedList<>();
 
@@ -38,5 +38,6 @@ public class MainGenerator {
                 e.printStackTrace();
             }
         }
+        return true;
     }
 }

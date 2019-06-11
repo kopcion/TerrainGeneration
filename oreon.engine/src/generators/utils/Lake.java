@@ -8,7 +8,7 @@ public class Lake {
     public List<LakePass> neighbours = new LinkedList<>();
     public Lake next = null;
     public LakePass pass = null;
-    public int id;
+    private int id;
     public boolean isOnEdge = false;
 
     public Lake(int id){

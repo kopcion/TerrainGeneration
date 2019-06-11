@@ -50,8 +50,8 @@ public class PerlinNoiseGenerator extends gen{
 
         double nX0 = n00 * (1 - f(u)) + n10 * f(u);
         double nX1 = n01 * (1 - f(u)) + n11 * f(u);
-        double nXY = nX0 * (1 - f(v)) + nX1 * f(v);
-        return nXY;
+
+        return nX0 * (1 - f(v)) + nX1 * f(v);
     }
 
     //f(x) = 6x^5 -15x^4 + 10x^3
@@ -76,5 +76,14 @@ public class PerlinNoiseGenerator extends gen{
         gradientsX = new double[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
         gradientsY = new double[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
         generateGradients();
+    }
+
+    public double[][] calculateAndGetValues(int mapSize) {
+        this.mapSize = mapSize;
+        init();
+
+        calculate();
+
+        return values;
     }
 }

@@ -12,7 +12,7 @@ import static generators.utils.Utils.isInsideTriangle;
 public class UpliftErosionGenerator extends gen {
 
     private static int TIME = 0;
-    int counter = 0;
+    private int counter = 0;
 
     private List<Line> lines = new LinkedList<>();
     private static Random random = new Random();
@@ -56,7 +56,7 @@ public class UpliftErosionGenerator extends gen {
                 i--;
             }
         }
-        values = new PerlinNoiseGenerator().calculateAndGetValues(mapSize);
+        values = new PerlinNoiseGenerator(2).calculateAndGetValues(mapSize);
         for(Point point : points){
             point.uplift = values[(int)point.x][(int)point.y];
             point.height = 10 * point.uplift;
@@ -82,7 +82,7 @@ public class UpliftErosionGenerator extends gen {
     private void calculateAreasOfVoronoiCells() {
         for(Triangle triangle : triangles){
             triangle.calculateCircumcentre();
-            System.out.println(triangle.circumcentre);
+//            System.out.println(triangle.circumcentre);
         }
         System.out.println("calculated circumcentres");
         for(Point point : points){
@@ -110,7 +110,7 @@ public class UpliftErosionGenerator extends gen {
         for(Point point : points){
             if(!point.isRiverMouth){
                 for(Point neighbour : point.getNeighbours()){
-                    System.out.println(neighbour.x + " " + neighbour.y + " " + (neighbour.lake == null));
+//                    System.out.println(neighbour.x + " " + neighbour.y + " " + (neighbour.lake == null));
                     if(neighbour.lakeId == point.lakeId){
                         continue;
                     }
@@ -216,7 +216,7 @@ public class UpliftErosionGenerator extends gen {
                 continue;
 
             point.next = getLowestNeighbour(point);
-            System.out.println(point.next);
+//            System.out.println(point.next);
             if(point.next != null)
                 point.next.parents.add(point);
         }
@@ -233,7 +233,6 @@ public class UpliftErosionGenerator extends gen {
         }
         if(minHeight < point.height)
             return out;
-        System.out.println("returning null");
         return null;
     }
 
@@ -281,9 +280,8 @@ public class UpliftErosionGenerator extends gen {
         checkTriangles();
 
         for(Point point : points){
-            for(int i=0; i < triangles.size(); i++){
-                Triangle triangle = triangles.get(i);
-                if(isInsideTriangle(point, triangle)){
+            for (Triangle triangle : triangles) {
+                if (isInsideTriangle(point, triangle)) {
                     checkTriangles();
                     splitTriangle(point, triangle);
                     checkTriangles();
@@ -336,8 +334,6 @@ public class UpliftErosionGenerator extends gen {
                         continue;
                     }
                     if(triangle.contains(oppositePoint)){
-                        System.out.println(triangle);
-                        System.out.println(triangle.ca);
                         throw new RuntimeException();
                     }
                     if(orientation(triangle) == ORIENTATION.COUNTERCLOCKWISE){
@@ -535,6 +531,7 @@ public class UpliftErosionGenerator extends gen {
         System.out.println("extracted neighbours");
 
         calculateAreasOfVoronoiCells();
+
         System.out.println("calculated areas");
 
         int iterations = 100;
@@ -552,20 +549,13 @@ public class UpliftErosionGenerator extends gen {
         }
 
         for(Point point : points){
-            System.out.println(point.areaOfCell);
-            System.out.println(point + " has height of " + point.height);
-        }
-
-        for(Point point : points){
             for(int i=0; i < mapSize; i++){
                 for(int j=0; j < mapSize; j++){
-//                    System.out.println(values[i][j]);
                     values[i][j] += point.height * Math.abs(Gaussian.pdf(dist(point, new Point(i, j)), 0, 85));
                 }
             }
         }
-        System.out.println(getMin());
-        System.out.println(getMax());
+
         normalize();
     }
 }

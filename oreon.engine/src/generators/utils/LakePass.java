@@ -1,7 +1,5 @@
 package generators.utils;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
-
 import java.util.Objects;
 
 public class LakePass {
@@ -27,7 +25,6 @@ public class LakePass {
     }
 
     public void updateLakes(){
-        System.out.println((first == null) + " " + (second == null) + "kappa");
         if(first == null || second == null) return;
         first.neighbours.add(this);
         second.neighbours.add(this);

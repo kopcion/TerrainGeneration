@@ -10,8 +10,11 @@ import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+@SuppressWarnings("ALL")
 public class SelectController {
     @FXML private Button First;
     @FXML private Button Second;
@@ -24,11 +27,17 @@ public class SelectController {
 
 
     public void firstButton() throws IOException {
+        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
         boolean error = false;
         try {
-            values = FileGenerator.loadFromFile(fileChooser.showOpenDialog(First.getScene().getWindow()));
-            values1 = FileGenerator.loadFromFile(fileChooser.showOpenDialog(First.getScene().getWindow()));
-            values2 = FileGenerator.loadFromFile(fileChooser.showOpenDialog(First.getScene().getWindow()));
+            List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());
+            if(files.size() < 3)
+                error = true;
+            else {
+                values = FileGenerator.loadFromFile(files.get(0));
+                values1 = FileGenerator.loadFromFile(files.get(1));
+                values2 = FileGenerator.loadFromFile(files.get(2));
+            }
         } catch (Exception e) {
             error = true;
         }
@@ -54,10 +63,17 @@ public class SelectController {
     }
 
     public void secondButton() throws IOException {
+        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
         boolean error = false;
         try {
-            values = FileGenerator.loadFromFile(fileChooser.showOpenDialog(Second.getScene().getWindow()));
-            values1 = FileGenerator.loadFromFile(fileChooser.showOpenDialog(Second.getScene().getWindow()));
+            List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());
+            if(files.size() < 3)
+                error = true;
+            else {
+                values = FileGenerator.loadFromFile(files.get(0));
+                values1 = FileGenerator.loadFromFile(files.get(1));
+                values2 = FileGenerator.loadFromFile(files.get(2));
+            }
         } catch (Exception e) {
             error = true;
         }

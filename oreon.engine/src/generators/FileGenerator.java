@@ -10,18 +10,20 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import static Config.PATH;
+import static generators.Config.PATH;
 
 public class FileGenerator {
 
-	static final ColorSpace GRAY = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-	static int counter = 1;
+	private static final ColorSpace GRAY = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+	private static int counter = 1;
 
 	public static void generateFile(double values[][]) {
 		try {
 			RenderedImage img = getRenderedImage(values);
 			ImageIO.write(img, "bmp", new File(Config.PATH + Integer.toString(counter) + ".bmp"));
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		counter++;
 	}
@@ -30,7 +32,9 @@ public class FileGenerator {
 		try {
 			RenderedImage img = getRenderedImage(values);
 			ImageIO.write(img, "bmp", new File(Config.PATH + "heightmap/1.bmp"));
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static RenderedImage getRenderedImage(double values[][]){
@@ -46,8 +50,7 @@ public class FileGenerator {
 		return res;
 	}
 
-	public static double[][] loadFromFile(String fileName) throws IOException {
-		File file = new File(Config.PATH + fileName);
+	public static double[][] loadFromFile(File file) throws IOException {
 		BufferedImage img = ImageIO.read(file);
 		int width = img.getWidth();
 		int height = img.getHeight();
@@ -59,5 +62,10 @@ public class FileGenerator {
 			}
 		}
 		return values.clone();
+	}
+
+	public static double[][] loadFromFile(String fileName) throws IOException {
+		File file = new File(Config.PATH + fileName);
+		return loadFromFile(file);
 	}
 }
