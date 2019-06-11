@@ -1,5 +1,6 @@
 package GUI;
 
+import generators.Config;
 import generators.MainGenerator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,19 +21,11 @@ public class MenuController {
 
     @FXML private Button SingleButton;
     @FXML private Button MultipleButton;
+    @FXML private Button generateSampleHeightmapsButton;
 
     final FileChooser fileChooser = new FileChooser();
 
-    public void generateSample(){
-        try {
-            MainGenerator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void SingleFileButton(){
-//        fileChooser.setInitialDirectory(new File("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res"));
         File file = fileChooser.showOpenDialog(SingleButton.getScene().getWindow());
         if(file == null){
             try {
@@ -42,18 +35,32 @@ public class MenuController {
             }
             return;
         }
-//        try {
-//            Files.copy(file.toPath(), FileSystems.getDefault().getPath("C:\\Users\\kopcion\\Desktop\\TerrainGeneration\\oreon.engine\\res\\heightmap", "heightmap1.bmp"), REPLACE_EXISTING);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        System.out.println("single button");
+        try {
+            Files.copy(file.toPath(), FileSystems.getDefault().getPath(Config.PATH + "heightmap/", "heightmap1.bmp"), REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //start engine
+        LaunchGame.launch();
         SingleButton.getScene().getWindow().hide();
+    }
+
+    public void generateSampleHeightmaps() {
+        MainGenerator.generate();
     }
 
     public void MultipleFileButton() throws IOException {
         ((Stage)MultipleButton.getScene().getWindow()).setScene(new Scene(FXMLLoader.load(getClass().getResource("MultipleMapsPresets.fxml")), 81,97));
     }
+
+    /*public void ChooseHeightmapDirectoryButton(){
+        File file = fileChooser.showOpenDialog(ChoseDirectory.getScene().getWindow());
+        if(!file.isDirectory()){
+            generators.Config.PATH = file.getParentFile().getAbsolutePath();
+        } else {
+            generators.Config.PATH = file.getAbsolutePath();
+        }
+        generators.Config.fileIsChosen = true;
+    }*/
 }

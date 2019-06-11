@@ -49,6 +49,8 @@ public class SelectController {
         }
 
         FileGenerator.generateFileInPlace(out);
+        LaunchGame.launch();
+        First.getScene().getWindow().hide();
     }
 
     public void secondButton() throws IOException {
@@ -77,5 +79,7 @@ public class SelectController {
         }
 
         FileGenerator.generateFileInPlace(out);
+        LaunchGame.launch();
+        First.getScene().getWindow().hide();
     }
 }
