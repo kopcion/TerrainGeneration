@@ -11,6 +11,11 @@ import static generators.utils.Utils.within;
 public class VoronoiNoiseGenerator extends gen {
     private List<Point> points = new LinkedList<>();
 
+    private int norm = 1;
+    public VoronoiNoiseGenerator(int i){
+        norm = i;
+    }
+
     private void generatePoints(){
         for(int i=0; i < Config.VORONOI_POINTS; i++){
             points.add(new Point(random.nextDouble() * mapSize, random.nextDouble() * mapSize));
@@ -38,7 +43,7 @@ public class VoronoiNoiseGenerator extends gen {
     }
 
     private double dist(Point a, Point b){
-        switch (Config.VORONOI_NORM) {
+        switch (norm) {
             case 0:
                 return maxNormDist(a, b);
             case 1:
@@ -48,7 +53,7 @@ public class VoronoiNoiseGenerator extends gen {
             case 3:
                 return threeNormDist(a, b);
             default:
-                return pNormDist(a, b, Config.VORONOI_NORM);
+                return pNormDist(a, b, norm);
         }
     }
 
@@ -77,12 +82,6 @@ public class VoronoiNoiseGenerator extends gen {
                 values[i][j] = smallestDist(new Point(i,j));
             }
         }
-
-        /*for(int i=0; i < values.length; i++){
-            for(int j=0; j < values[0].length; j++){
-                values[i][j] = smallestDist1(new Point(i,j));
-            }
-        }*/
 
         normalize();
     }

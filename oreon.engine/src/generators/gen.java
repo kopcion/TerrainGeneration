@@ -33,7 +33,11 @@ public abstract class gen {
         return Config.JITTER_ENABLED * Config.AMPLITUDE * (2*random.nextDouble() - 1d) * jitterMult;
     }
 
-    double getMax() {
+    double jitter(double jitterMult){
+        return Config.JITTER_ENABLED * Config.AMPLITUDE * (2*random.nextDouble() - 1d) * jitterMult;
+    }
+
+    private double getMax() {
         double out = 0f;
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[0].length; j++) {
@@ -43,7 +47,7 @@ public abstract class gen {
         return out;
     }
 
-    double getMin() {
+    private double getMin() {
         double out = 1f;
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[0].length; j++) {

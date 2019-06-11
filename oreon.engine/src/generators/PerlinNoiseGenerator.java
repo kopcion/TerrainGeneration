@@ -1,12 +1,14 @@
 package generators;
 
-import java.util.Random;
-
 public class PerlinNoiseGenerator extends gen{
     private double[][] gradientsX;
     private double[][] gradientsY;
 
-    public PerlinNoiseGenerator() {}
+    double resolution = Config.RESOLUTION;
+
+    public PerlinNoiseGenerator(int i) {
+        resolution *= (double)(i+1);
+    }
 
     private void normalizeVector(int i, int j){
         double length = (double) Math.sqrt( gradientsX[i][j] * gradientsX[i][j] + gradientsY[i][j] * gradientsY[i][j] );
@@ -59,7 +61,7 @@ public class PerlinNoiseGenerator extends gen{
 
     @Override
     void calculate(){
-        double step = 1d / Config.RESOLUTION;
+        double step = 1d / resolution;
         for(int i=0; i < values.length; i++){
             for (int j=0; j < values[0].length; j++){
                 values[i][j] = calculateValueAt(i * step, j * step);
@@ -71,18 +73,8 @@ public class PerlinNoiseGenerator extends gen{
     @Override
     void init(){
         values = new double[mapSize][mapSize];
-        gradientsX = new double[ (int)(mapSize / Config.RESOLUTION) + 2][ (int)(mapSize / Config.RESOLUTION) + 2];
-        gradientsY = new double[ (int)(mapSize / Config.RESOLUTION) + 2][ (int)(mapSize / Config.RESOLUTION) + 2];
+        gradientsX = new double[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
+        gradientsY = new double[ (int)(mapSize / resolution) + 2][ (int)(mapSize / resolution) + 2];
         generateGradients();
-    }
-
-    public double[][] calculateAndGetValues(int mapSize) {
-        this.mapSize = mapSize;
-
-        init();
-
-        calculate();
-
-        return values;
     }
 }

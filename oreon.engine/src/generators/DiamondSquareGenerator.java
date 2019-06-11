@@ -1,6 +1,5 @@
 package generators;
 
-
 public class DiamondSquareGenerator extends gen {
 
     public DiamondSquareGenerator() {}
