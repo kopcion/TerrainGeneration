@@ -5,26 +5,26 @@ import core.scene.Node;
 
 public class Terrain extends Node {
 	
-	private TerrainConfig configuration;
+	private TerrainConfiguration configuration;
 	
-	public void init(String config) {
-		configuration = new TerrainConfig();
-		configuration.loadFile(config);
+	public void init() {
+		configuration = new TerrainConfiguration();
 		
-		addChild(new TerrainQuadtree(configuration));
+		addNode(new Quadtree(configuration));
 	}
-	
+
+	// Updating terrain is updating only one related node which is the main Quadtree:
 	public void updateQuadtree() {
 		if(Camera.getInstance().isCameraMoved()) {
-			((TerrainQuadtree) getChildren().get(0)).updateQuadtree();
+			((Quadtree) getRelatedNodes().get(0)).updateQuadtree();
 		}
 	}
 
-	public TerrainConfig getConfiguration() {
+	public TerrainConfiguration getConfiguration() {
 		return configuration;
 	}
 	
-	public void setConfiguration(TerrainConfig configuration) {
+	public void setConfiguration(TerrainConfiguration configuration) {
 		this.configuration = configuration;
 	}
 }
