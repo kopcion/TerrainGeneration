@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -26,9 +25,14 @@ public class MenuController {
 
     private final FileChooser fileChooser = new FileChooser();
 
+    public MenuController() {
+//        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
+        fileChooser.setInitialDirectory(new File(Config.PATH));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Heightmaps", "*.bmp"));
+    }
+
+
     public void SingleFileButton(){
-        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
-//        fileChooser.setInitialDirectory(new File("./res"));
         File file = fileChooser.showOpenDialog(SingleButton.getScene().getWindow());
         if(file == null){
             try {
@@ -52,11 +56,10 @@ public class MenuController {
     public void generateSampleHeightmaps() {
         try{
             generateSampleHeightmapsButton.getScene().getWindow().hide();
-            Parent root = FXMLLoader.load(getClass().getResource("Generating.fxml"));
             Stage stage = new Stage();
 
             stage.setTitle("Loading");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("Generating.fxml")), 240,100));
             stage.setAlwaysOnTop(true);
             stage.show();
 

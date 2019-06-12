@@ -1,5 +1,6 @@
 package GUI;
 
+import generators.Config;
 import generators.FileGenerator;
 import generators.utils.Smoother;
 import javafx.fxml.FXML;
@@ -25,9 +26,14 @@ public class SelectController {
     double values1[][];
     double values2[][];
 
+    public SelectController() {
+//        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
+        fileChooser.setInitialDirectory(new File(Config.PATH));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Heightmaps", "*.bmp"));
+    }
+
 
     public void firstButton() throws IOException {
-        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
         boolean error = false;
         try {
             List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());
@@ -63,7 +69,6 @@ public class SelectController {
     }
 
     public void secondButton() throws IOException {
-        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
         boolean error = false;
         try {
             List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());

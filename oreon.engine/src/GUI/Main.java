@@ -1,6 +1,8 @@
 package GUI;
 
 import java.io.IOException;
+
+import generators.Config;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +21,8 @@ public final class Main extends Application {
     }
 
     public static void main(String[] args) {
+//        Config.PATH = System.getProperty("user.dir") + "/oreon.engine/res/";
+        Config.PATH = System.getProperty("user.dir") + "/res/";
         launch(args);
     }
 }
