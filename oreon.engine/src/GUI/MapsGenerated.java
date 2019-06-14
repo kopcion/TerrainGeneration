@@ -13,7 +13,7 @@ public class MapsGenerated {
 
     public void OKButton(){
         try {
-            ((Stage)OK.getScene().getWindow()).setScene(new Scene(FXMLLoader.load(getClass().getResource("Menu.fxml")), 226, 156));
+            ((Stage)OK.getScene().getWindow()).setScene(new Scene(FXMLLoader.load(getClass().getResource("Menu.fxml")), 600, 400));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -4,9 +4,9 @@ import core.kernel.Game;
 
 public class LaunchGame{
 
-	public static void launch(){
+	static void launch (){
 		Game game = new Game();
-		game.getEngine().createWindow(1600, 1400);
+		game.getEngine().createWindow(1400, 1000);
 		game.init();
 		game.launch();
 	}
