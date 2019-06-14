@@ -16,7 +16,7 @@ public final class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 
         stage.setTitle("Terrain Generator");
-        stage.setScene(new Scene(root, 226, 156));
+        stage.setScene(new Scene(root, 600, 400));
         stage.show();
     }
 
