@@ -12,7 +12,7 @@ public class ResourceLoader {
 		
 		try
 		{
-			shaderReader = new BufferedReader(new FileReader("./oreon.engine/res/" + fileName));
+			shaderReader = new BufferedReader(new FileReader("res/" + fileName));
 			String line;
 			while((line = shaderReader.readLine()) != null)
 			{

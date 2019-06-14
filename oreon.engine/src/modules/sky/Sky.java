@@ -17,7 +17,7 @@ public class Sky extends Node {
 		
 		// Loading model data into application memory using OBJLoader from engine template
 		// generated dome object consisting only from one mesh that's why we get [0]th element
-		Mesh mesh = new OBJLoader().load("./oreon.engine/res/models/dome", "dome.obj", null)[0].getMesh();
+		Mesh mesh = new OBJLoader().load("res/models/dome", "dome.obj", null)[0].getMesh();
 		
 		// Storing mesh data in the GPU memory
 		MeshVertexBufferObject meshBuffer = new MeshVertexBufferObject();
