@@ -6,6 +6,7 @@ import generators.utils.Smoother;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
@@ -26,8 +27,7 @@ public class SelectController {
     double values1[][];
     double values2[][];
 
-    public SelectController() {
-//        fileChooser.setInitialDirectory(new File("./oreon.engine/res"));
+    public SelectController(){
         fileChooser.setInitialDirectory(new File(Config.PATH));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Heightmaps", "*.bmp"));
     }
@@ -37,7 +37,7 @@ public class SelectController {
         boolean error = false;
         try {
             List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());
-            if(files.size() < 3)
+            if(files.size() != 3)
                 error = true;
             else {
                 values = FileGenerator.loadFromFile(files.get(0));
@@ -47,15 +47,19 @@ public class SelectController {
         } catch (Exception e) {
             error = true;
         }
+
         if(values == null || values1 == null || values2 == null || error) {
-            ((Stage)First.getScene().getWindow()).setScene(new Scene(FXMLLoader.load(getClass().getResource("Error.fxml")), 210,100));
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Please select three files.");
+            alert.showAndWait();
             return;
         }
 
         double out[][] = new double[values.length][values[0].length];
         for(int i=0; i < values.length; i++){
             for(int j=0; j < values[0].length; j++){
-                out[i][j] = (values2[i][j] + values[i][j] * values1[i][j] + 0.5d * (1 - values2[i][j]) * values1[i][j]) / 2.5d;
+                out[i][j] = (values2[i][j] + values[i][j] * values2[i][j] + 0.5d * (1 - values2[i][j]) * values1[i][j]) / 2.5d;
             }
         }
 
@@ -72,19 +76,21 @@ public class SelectController {
         boolean error = false;
         try {
             List<File> files = fileChooser.showOpenMultipleDialog(First.getScene().getWindow());
-            if(files.size() < 3)
+            if(files.size() != 2)
                 error = true;
             else {
                 values = FileGenerator.loadFromFile(files.get(0));
                 values1 = FileGenerator.loadFromFile(files.get(1));
-                values2 = FileGenerator.loadFromFile(files.get(2));
             }
         } catch (Exception e) {
             error = true;
         }
 
         if(values == null || values1 == null || error) {
-            ((Stage)Second.getScene().getWindow()).setScene(new Scene(FXMLLoader.load(getClass().getResource("Error.fxml")), 210,100));
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Please select two files.");
+            alert.showAndWait();
             return;
         }
 
